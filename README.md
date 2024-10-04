@@ -92,16 +92,29 @@ pip3 install adafruit-circuitpython-servokit
 ## Code Structure
 
 ```
-├── src
-│   ├── capture_image.py          # Handles image capturing from the Logitech camera
-│   ├── detect_person.py          # Detects people using a pre-trained PyTorch model
-│   ├── pan_tilt_control.py       # Controls the servo motors for the camera's pan-tilt movement
-│   ├── send_telegram.py          # Sends images via Telegram bot
-│   ├── send_whatsapp.py          # Sends images via WhatsApp using Twilio
-│   └── main.py                   # Main script to integrate person detection, image capture, and notification
-├── models                        # Stores any machine learning models used for detection
-├── requirements.txt              # List of required Python libraries
-└── README.md                     # Documentation (this file)
+├── capture_image                          # Handles image capturing from the Logitech
+│   ├── capture_image.py           
+│   └── README.md
+├── detect_person                          # Detects people using a pre-trained PyTorch
+│   ├── detect_person.py                   
+│   └── README.md
+├── pan_tilt_control                       # Controls the servo motors for the camera's pan-tilt movement
+│   ├── pan_tilt_control.py
+│   └── README.md
+├── send_telegram                          # Sends images via Telegram bot
+│   ├── send_telegram.py
+│   └── README.md
+├── send_whatsapp                          # Sends images via WhatsApp using Twilio                        
+│   ├── send_whatsapp.py
+│   └── README.md
+├── main                                   # Main script to integrate person detection, image capture, and notification                               
+│   ├── main.py
+│   └── README.md
+├── models
+├── requirements.txt
+├── LICENSE                                # License file for the project
+└── README.md                              # Main README explaining the entire project
+
 ```
 
 ### Important Files:
