@@ -95,11 +95,24 @@ pip3 install adafruit-circuitpython-servokit
 ├── capture_image                          # Handles image capturing from the Logitech
 │   ├── capture_image.py           
 │   └── README.md
-├── detect_person                          # Detects people using a pre-trained PyTorch
+├── detect_person                          # Detects people using a pre-trained PyTorch model
 │   ├── detect_person.py                   
 │   └── README.md
 ├── pan_tilt_control                       # Controls the servo motors for the camera's pan-tilt movement
 │   ├── pan_tilt_control.py
+│   └── README.md
+├── face_recognition                       # Recognize authorized and unauthorized faces
+│   ├── recognize_face.py                  # Detects and verifies faces
+│   └── README.md
+├── video_streaming                        # Real-time video streaming functionality
+│   ├── stream_video.py                    # Stream live video to mobile or web
+│   └── README.md
+├── cloud_upload                           # Upload images and videos to cloud storage
+│   ├── upload_to_cloud.py                 # Uploads media to Google Drive or AWS S3
+│   └── README.md
+├── idle_mode                              # Handles idle states based on conditions
+│   ├── sensor_based_idle.py               # Idle mode when no motion is detected
+│   ├── manual_idle.py                     # Manually control idle mode via Telegram/WhatsApp
 │   └── README.md
 ├── send_telegram                          # Sends images via Telegram bot
 │   ├── send_telegram.py
@@ -114,6 +127,7 @@ pip3 install adafruit-circuitpython-servokit
 ├── requirements.txt                       # List of required Python libraries
 ├── LICENSE                                # License file for the project
 └── README.md                              # Main README explaining the entire project
+
 
 ```
 
