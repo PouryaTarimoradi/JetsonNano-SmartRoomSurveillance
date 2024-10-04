@@ -110,8 +110,8 @@ pip3 install adafruit-circuitpython-servokit
 ├── main                                   # Main script to integrate person detection, image capture, and notification                               
 │   ├── main.py
 │   └── README.md
-├── models
-├── requirements.txt
+├── models                                 # Stores any machine learning models used for detection                                
+├── requirements.txt                       # List of required Python libraries
 ├── LICENSE                                # License file for the project
 └── README.md                              # Main README explaining the entire project
 
