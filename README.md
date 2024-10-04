@@ -95,11 +95,14 @@ pip3 install adafruit-circuitpython-servokit
 ├── capture_image                          # Handles image capturing from the Logitech
 │   ├── capture_image.py           
 │   └── README.md
-├── detect_person                          # Detects people using a pre-trained PyTorch model
-│   ├── detect_person.py                   
+├── detect_person                          # Detects a person using a pre-trained PyTorch model
+│   ├── detect_person.py                   # Detects the person in the frame
 │   └── README.md
 ├── pan_tilt_control                       # Controls the servo motors for the camera's pan-tilt movement
-│   ├── pan_tilt_control.py
+│   ├── pan_tilt_control.py                # Adjusts the camera’s position using servos (PCA9685)
+│   └── README.md
+├── person_tracking                        # Tracks the detected person using pan-tilt movement
+│   ├── track_person.py                    # Tracks the person and adjusts the camera
 │   └── README.md
 ├── face_recognition                       # Recognize authorized and unauthorized faces
 │   ├── recognize_face.py                  # Detects and verifies faces
@@ -123,10 +126,11 @@ pip3 install adafruit-circuitpython-servokit
 ├── main                                   # Main script to integrate person detection, image capture, and notification                               
 │   ├── main.py
 │   └── README.md
-├── models                                 # Stores any machine learning models used for detection                                
+├── models                                 # Stores any machine learning models used for detection and recognition                                
 ├── requirements.txt                       # List of required Python libraries
 ├── LICENSE                                # License file for the project
 └── README.md                              # Main README explaining the entire project
+
 
 
 ```
