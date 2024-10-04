@@ -95,17 +95,20 @@ pip3 install adafruit-circuitpython-servokit
 ├── capture_image                          # Handles image capturing from the Logitech
 │   ├── capture_image.py           
 │   └── README.md
-├── detect_person                          # Detects a person using a pre-trained PyTorch model
-│   ├── detect_person.py                   # Detects the person in the frame
+├── detect_person                          # Detects people using a pre-trained PyTorch model
+│   ├── detect_person.py                   
 │   └── README.md
 ├── pan_tilt_control                       # Controls the servo motors for the camera's pan-tilt movement
 │   ├── pan_tilt_control.py                # Adjusts the camera’s position using servos (PCA9685)
 │   └── README.md
-├── person_tracking                        # Tracks the detected person using pan-tilt movement
-│   ├── track_person.py                    # Tracks the person and adjusts the camera
+├── face_detection                         # Detects any face using OpenCV (for tracking)
+│   ├── detect_face.py                     # Detects faces in the frame
+│   └── README.md
+├── face_tracking                          # Tracks the detected face using pan-tilt movement
+│   ├── track_face.py                      # Tracks the face and adjusts the camera
 │   └── README.md
 ├── face_recognition                       # Recognize authorized and unauthorized faces
-│   ├── recognize_face.py                  # Detects and verifies faces
+│   ├── recognize_face.py                  # Verifies faces using a pre-trained model
 │   └── README.md
 ├── video_streaming                        # Real-time video streaming functionality
 │   ├── stream_video.py                    # Stream live video to mobile or web
@@ -117,11 +120,11 @@ pip3 install adafruit-circuitpython-servokit
 │   ├── sensor_based_idle.py               # Idle mode when no motion is detected
 │   ├── manual_idle.py                     # Manually control idle mode via Telegram/WhatsApp
 │   └── README.md
-├── send_telegram                          # Sends images via Telegram bot
-│   ├── send_telegram.py
+├── send_telegram                          # Sends images via Telegram bot and receives commands for control
+│   ├── send_telegram.py                   # Now includes turning pan-tilt on/off via Telegram
 │   └── README.md
-├── send_whatsapp                          # Sends images via WhatsApp using Twilio                        
-│   ├── send_whatsapp.py
+├── send_whatsapp                          # Sends images via WhatsApp using Twilio and receives commands for control                        
+│   ├── send_whatsapp.py                   # Now includes turning pan-tilt on/off via WhatsApp
 │   └── README.md
 ├── main                                   # Main script to integrate person detection, image capture, and notification                               
 │   ├── main.py
