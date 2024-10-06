@@ -1,116 +1,115 @@
-# Capture Image with Logitech Camera
+# Camera Capture Module
 
-This module captures images using the Logitech camera connected to the Jetson Nano. It allows you to view the live camera feed and capture images when prompted.
+This module is designed to capture images from a Logitech camera connected to a Jetson Nano. The captured images are saved locally in a timestamped format. It uses **OpenCV** for handling the camera feed and image capturing.
 
 ## Overview
 
-This script initializes the camera, displays a live camera feed, and allows users to capture images by pressing the 'c' key. It saves the images in a timestamped format inside a specific directory. The script also allows the user to exit the camera feed by pressing the 'q' key.
+The script `capture_image.py` initializes the Logitech camera connected to the Jetson Nano, adjusts camera settings, waits for a short delay to allow the camera to stabilize, and captures an image. The image is saved in a designated folder with a unique name based on the current date and time.
 
-### Code Walkthrough
+### Key Features:
 
-#### 1. Importing Libraries
-```python
-import cv2
-import time
-import os
-```
-- `cv2`: OpenCV library used for video and image processing.
-- `time`: Used for generating timestamps to save images with unique filenames.
-- `os`: Provides functions for interacting with the operating system, like checking if directories exist or creating new directories.
+- **Camera Resolution:** Configurable to 640x480 for a balance between image quality and performance.
+- **Sleep Delay:** A small 0.5-second pause allows the camera to adjust to the environment before capturing.
+- **Image Saving:** Images are saved in the `captured_images` directory with a timestamp, ensuring unique filenames.
 
-#### 2. Initializing the Camera
+## Code Breakdown
+
+### Camera Initialization
+
+The camera is initialized using `cv2.VideoCapture()`. This function opens the camera and allows for capturing images or video streams.
+
 ```python
 camera = cv2.VideoCapture(1)
 ```
-This line initializes the Logitech camera. The argument `1` specifies the device ID for the camera. If your Jetson Nano has multiple cameras, you can change this index based on the camera setup.
 
-#### 3. Defining the Directory for Captured Images
+* `1` is used as the argument because the Logitech camera is connected to `/dev/video1` (the second video device). Using `0` would open the default camera, which in this case is incorrect.
+
+### Camera Settings
+
+Once the camera is successfully initialized, we set the resolution to **640x480** using the following OpenCV commands:
+
 ```python
-save_dir = '1-capture_image'
-if not os.path.exists(save_dir):
-    os.makedirs(save_dir)
+camera.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 ```
-- `save_dir`: This string specifies the directory where captured images will be stored. In this case, the directory is named `1-capture_image`.
-- The script checks if the directory exists with `os.path.exists(save_dir)`, and if it doesn't, it creates the directory using `os.makedirs(save_dir)`.
 
-#### 4. Capture and Save Image Function
+These properties ensure the camera captures images at this resolution, which is a good balance between quality and performance, especially for embedded systems like the Jetson Nano.
+
+### Delay for Camera Adjustment
+
+A short delay is introduced to allow the camera to adjust to lighting conditions or focus before capturing an image. This prevents issues like dark or blurry images.
+
 ```python
-def capture_image():
-    ret, frame = camera.read()
-    if ret:
-        timestamp = time.strftime("%Y%m%d-%H%M%S")
-        file_path = os.path.join(save_dir, f"image_{timestamp}.jpg")
-        cv2.imwrite(file_path, frame)
-        print(f"Image saved: {file_path}")
-    else:
-        print("Failed to capture image")
+time.sleep(0.5)
 ```
-- `camera.read()`: Reads a single frame from the camera. It returns two values: `ret` (a boolean indicating if the frame was captured successfully) and `frame` (the actual image frame).
-- If `ret` is `True`, meaning the frame was successfully captured, the script generates a timestamp using `time.strftime("%Y%m%d-%H%M%S")`. This ensures that each captured image has a unique filename.
-- `cv2.imwrite(file_path, frame)`: Saves the captured frame (image) to the specified path. The image is saved in .jpg format, with the filename `image_<timestamp>.jpg`.
-- If the frame capture fails, the script prints an error message: "Failed to capture image".
 
-#### 5. Main Loop for Camera Feed and Input Handling
+### Capturing the Image
+
+Once the camera has adjusted, we attempt to capture a single frame (image) using `camera.read()`:
+
 ```python
-if __name__ == "__main__":
-    print("Camera is warming up...")
-    time.sleep(2)
-    
-    print("Press 'q' to exit.")
-    while True:
-        ret, frame = camera.read()
-        if not ret:
-            print("Failed to grab frame")
-            break
-        cv2.imshow("Camera Feed", frame)
-        key = cv2.waitKey(33)
-        
-        if key == ord('c'):
-            capture_image()
-        if key == ord('q'):
-            print("Exiting the program.")
-            break
+ret, frame = camera.read()
 ```
-- Camera Warm-up: The script prints a message and waits for 2 seconds to allow the camera to warm up with `time.sleep(2)`. This helps avoid capturing incomplete or faulty frames right after initialization.
-- Main Loop: The script enters a `while True` loop, where it continuously reads frames from the camera.
-- `camera.read()`: Reads a frame from the camera. If it fails to capture a frame (`ret == False`), the script exits the loop with an error message.
-- Displaying the Feed: The frame is displayed in a window titled "Camera Feed" using `cv2.imshow()`.
-- Handling Key Presses: The script checks for key inputs:
-  - `cv2.waitKey(33)`: Waits for 33 milliseconds (roughly 30 frames per second) for a key press.
-  - If the 'c' key is pressed (`ord('c')`), it calls the `capture_image()` function to capture and save an image.
-  - If the 'q' key is pressed (`ord('q')`), the script prints a message and breaks out of the loop, exiting the program.
 
-#### 6. Cleaning Up Resources
+* `ret`: A boolean that indicates whether the capture was successful (`True`) or not (`False`).
+* `frame`: The actual image captured by the camera as a matrix of pixel values.
+
+If `ret` is `True`, the image is captured successfully, and it is saved to the filesystem.
+
+### Saving the Image
+
+Captured images are saved in the **captured_images** directory. The filename includes a timestamp to ensure that each captured image has a unique name:
+
+```python
+img_name = os.path.join(save_dir, f"image_{datetime.now().strftime('%Y%m%d_%H%M%S')}.jpg")
+cv2.imwrite(img_name, frame)
+```
+
+* `datetime.now().strftime('%Y%m%d_%H%M%S')`: Generates a unique timestamp based on the current date and time (format: `YYYYMMDD_HHMMSS`).
+* `cv2.imwrite()`: Writes the captured frame to a file in `.jpg` format.
+
+### Cleanup
+
+After the image is captured and saved, the camera is released to free up resources:
+
 ```python
 camera.release()
-cv2.destroyAllWindows()
 ```
-- `camera.release()`: Releases the camera resource when the program exits.
-- `cv2.destroyAllWindows()`: Closes any OpenCV windows that were opened during the program execution.
 
-## How to Run the Script
+## Usage Instructions
 
-1. Ensure the Logitech camera is connected to your Jetson Nano.
-2. Open a terminal and navigate to the directory containing `capture_image.py`.
-3. Run the script:
-   ```bash
-   python3 capture_image.py
-   ```
-4. The live camera feed will appear in a new window.
-5. Press:
-   - 'c': To capture an image. The image will be saved in the `1-capture_image/` directory.
-   - 'q': To quit the program.
+### Prerequisites
 
-## Dependencies
+* Jetson Nano with Ubuntu 18.04.
+* Logitech USB camera.
+* Python 3.6.9 or higher.
+* OpenCV library installed (`opencv-python` package).
 
-- OpenCV (version 4.5.5)
-- Python 3.6.9 
+### Installing OpenCV
 
-## Notes
+If OpenCV is not installed, you can install it using `pip`:
 
-- The directory `1-capture_image/` will store all the captured images.
-- Ensure you have OpenCV installed:
-  ```bash
-  sudo apt-get install python3-opencv
-  ```
-- You can adjust the camera device ID (currently set to 1) if needed, depending on the camera setup.
+```bash
+pip3 install opencv-python
+```
+
+### Running the Script
+
+1. Ensure that the camera is connected to the Jetson Nano.
+2. Navigate to the `capture_image` directory:
+
+```bash
+cd ~/pyProject/capture_image
+```
+
+3. Run the Python script:
+
+```bash
+python3 capture_image.py
+```
+
+4. The captured image will be saved in the `captured_images` folder with a name according to your date and time of running the script,like:
+
+```
+image_20241006_153015.jpg
+```
