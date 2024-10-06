@@ -104,7 +104,7 @@ cv2.destroyAllWindows()
 ## Dependencies
 
 - OpenCV (version 4.5.5)
-- Python 3.6.9 (as per your Jetson Nano setup)
+- Python 3.6.9 
 
 ## Notes
 
