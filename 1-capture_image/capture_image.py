@@ -19,7 +19,7 @@ camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 time.sleep(0.5)
 
 # Define a directory to save captured images
-save_dir = os.path.join(os.path.expanduser("~"), "pyProject/capture_image/captured_images")
+save_dir = os.path.join(os.path.expanduser("~"), "pyProject/1-capture_image/captured_images")
 os.makedirs(save_dir, exist_ok=True)
 
 # Capture the image
