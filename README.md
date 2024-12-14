@@ -1,8 +1,6 @@
 # Camera Security System with Jetson Nano
 ![photo_2024-12-14_20-53-26](https://github.com/user-attachments/assets/821170ea-0271-490b-8996-3f2e99ac1788)
 
-<img src="photo_2024-12-14_20-53-26.jpg" alt="Camera Security System" width="800">
-
 ## Overview
 This project is an AI-powered surveillance system built on the NVIDIA Jetson Nano platform. It integrates motion detection, object recognition, and real-time notification capabilities, designed to detect and alert users when someone enters a monitored space. Captured images are sent to a Telegram bot for easy access.
 
