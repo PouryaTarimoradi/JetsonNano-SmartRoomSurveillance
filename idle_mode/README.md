@@ -1,150 +1,132 @@
 # Idle Mode
 
 ## Overview
-The Idle Mode module ensures that the surveillance system can be paused and resumed as needed. When idle mode is active, the system stops processing motion detection, notifications, and other tasks, conserving resources while remaining ready to resume operations. This feature is essential for optimizing resource usage and giving users full control over the system's activity.
+The Idle Mode module manages the operational state of the AI-powered surveillance system. It allows users to remotely pause or resume system activities, such as motion detection, image processing, and notifications, while ensuring smooth transitions between states. The module leverages multithreading for concurrent task management, ensuring that system responsiveness and key operations are maintained.
 
 ## Features
-- Pauses and resumes the surveillance system without terminating the program.
-- Integrates seamlessly with Telegram bot commands for remote activation and deactivation.
-- Provides console feedback on the system's current state (Active or Idle).
-- Allows real-time switching between modes without disrupting the overall system.
-- Prevents resource-intensive operations like image processing and notifications during idle mode.
+- **Remote Control**: Integrates with Telegram bot commands to toggle between active and idle states.
+- **Multithreading**: Uses threads to handle Telegram command processing, system state management, and image detection independently.
+- **Event Management**: Implements threading events to control and monitor system activities such as image detection and exit signals.
+- **System Feedback**: Provides real-time updates on the system state (active or idle).
 
 ## How It Works
-The `idle_mode.py` script operates as a control mechanism that toggles the system's operational state. Here's how it works:
-
-1. **State Management**:
-   - Maintains a boolean flag (`is_idle`) to track whether the system is in idle mode.
-   - When idle mode is active, key functionalities such as motion detection, notifications, and image processing are disabled.
+1. **Threading and Events**:
+   - Uses `threading.Event` objects to manage system activities, such as pausing image detection and signaling program termination.
+   - Separate threads ensure that Telegram updates and system tasks run concurrently without blocking each other.
 
 2. **Command Handling**:
-   - Listens for external commands (e.g., from a Telegram bot) to switch between active and idle modes.
-   - Processes commands such as `Start` to resume operations and `Stop` to enter idle mode.
+   - Listens for commands (`start`, `stop`, `status`, `clean`, etc.) via the Telegram bot.
+   - Executes corresponding actions, such as resuming or pausing motion detection, deleting messages, or retrieving system stats.
 
-3. **Feedback**:
-   - Outputs the current state (`Active` or `Idle`) to the console and sends state updates to the Telegram bot for remote monitoring.
-
-4. **Integration**:
-   - Can be integrated into the main surveillance system to dynamically control processing tasks.
+3. **System Initialization**:
+   - Starts a listener thread to continuously process Telegram commands.
+   - Keeps the system idle (paused) by default until activated via the `start` command.
 
 ## Setup Instructions
-1. Ensure the Telegram bot integration is configured correctly (see `bot_config.py`).
-2. Import the `idle_mode.py` module in the main system script to enable state control.
-3. Update the command-handling logic in the Telegram bot script to include `Start` and `Stop` commands for idle mode management.
+1. Configure the Telegram bot using `bot_config.py`.
+2. Ensure that the necessary modules (`send_telegram`, `system_stats`, etc.) are set up correctly.
+3. Import and initialize the `idle_mode.py` module in the main script to enable remote state control.
 
 ## Usage
 ### Activating Idle Mode
-Call the `set_idle_mode()` function with `True` to activate idle mode:
+The system starts in idle mode by default. Use the `/stop` command to explicitly set the system to idle mode:
 ```python
-from idle_mode import set_idle_mode
-set_idle_mode(True)
+from idle_mode import image_detection_paused
+image_detection_paused.set()  # Pause image detection
 ```
-This pauses the surveillance system, stopping motion detection and notifications.
 
 ### Resuming Operations
-Call the `set_idle_mode()` function with `False` to deactivate idle mode:
+Use the `/start` command to resume operations:
 ```python
-set_idle_mode(False)
+from idle_mode import image_detection_paused
+image_detection_paused.clear()  # Resume image detection
 ```
-This resumes all suspended operations.
 
-### Checking Idle State
-You can check whether the system is currently in idle mode:
+### Listening for Telegram Commands
+Initialize the idle mode listener to process Telegram commands:
 ```python
-from idle_mode import is_idle
-if is_idle:
-    print("The system is currently idle.")
-else:
-    print("The system is active.")
+from idle_mode import initialize_idle_mode
+initialize_idle_mode()
 ```
 
 ## Code Snippet Breakdown
-### State Management
+### Thread and Event Management
 ```python
-# Global flag for idle mode
-is_idle = False
+import threading
 
-def set_idle_mode(state):
-    global is_idle
-    is_idle = state
-    if is_idle:
-        print("System is now in Idle Mode.")
-    else:
-        print("System is now Active.")
+# Events for system control
+system_active_event = threading.Event()  # Indicates if the system is active
+exit_event = threading.Event()  # Signals when to exit the program
+image_detection_paused = threading.Event()  # Manages image detection state
+
+# Start in a paused state
+image_detection_paused.set()  # Ensures motion detection is paused until activated
 ```
-This function sets the `is_idle` flag and provides feedback on the current system state.
+These threading events allow precise control over system states, ensuring tasks like motion detection only run when appropriate.
 
-### Command Handling Example
+### Telegram Command Handling
 ```python
-def handle_command(command):
-    if command.lower() == "start":
-        set_idle_mode(False)
-    elif command.lower() == "stop":
-        set_idle_mode(True)
-    else:
-        print("Unknown command.")
-```
-This function interprets commands (e.g., from a Telegram bot) to toggle the system's state.
+def handle_callback_query(update):
+    query = update.callback_query
+    message = query.data.strip().lower()
 
-### Integration with Main Script
+    if message == 'start':
+        image_detection_paused.clear()  # Resume image detection
+        system_active_event.set()
+        bot.send_message(chat_id=query.message.chat_id, text="System activated.")
+    elif message == 'stop':
+        image_detection_paused.set()  # Pause image detection
+        system_active_event.clear()
+        bot.send_message(chat_id=query.message.chat_id, text="System deactivated.")
+    elif message == 'status':
+        status = "active" if system_active_event.is_set() else "idle"
+        bot.send_message(chat_id=query.message.chat_id, text=f"The system is currently {status}.")
+    elif message == 'exit':
+        exit_event.set()
+        bot.send_message(chat_id=query.message.chat_id, text="Exiting the system...")
+    query.answer()
+```
+This function processes commands received via Telegram and updates the system state accordingly.
+
+### Idle Mode Listener
 ```python
-from idle_mode import is_idle, set_idle_mode
-
-while True:
-    if not is_idle:
-        # Perform motion detection and other tasks
-        print("System is Active: Processing...")
-    else:
-        print("System is Idle: No operations performed.")
-    time.sleep(1)
+def idle_mode_listener():
+    """Polls Telegram for updates and handles commands."""
+    while not exit_event.is_set():
+        updates = bot.get_updates(timeout=10)
+        for update in updates:
+            if update.callback_query:
+                handle_callback_query(update)
 ```
-This ensures that motion detection only runs when the system is active.
+This thread continuously listens for and processes Telegram updates without blocking other system tasks.
 
-### Telegram Command Example
-Integrate idle mode with Telegram bot commands:
+### Initialization
 ```python
-@bot.message_handler(commands=['start', 'stop'])
-def handle_telegram_commands(message):
-    if message.text.lower() == "/start":
-        set_idle_mode(False)
-        bot.send_message(chat_id, "System is now Active.")
-    elif message.text.lower() == "/stop":
-        set_idle_mode(True)
-        bot.send_message(chat_id, "System is now in Idle Mode.")
+def initialize_idle_mode():
+    thread = threading.Thread(target=idle_mode_listener)
+    thread.daemon = True  # Ensures the thread stops when the main program exits
+    thread.start()
+    print("Idle Mode listener thread started.")
 ```
-This allows users to toggle idle mode directly from the Telegram bot.
+This initializes the listener thread, allowing the system to process Telegram commands independently.
 
 ## Example Output
+- **Telegram Commands**:
+  - `/start`: Activates the system and resumes motion detection.
+  - `/stop`: Deactivates the system and pauses motion detection.
+  - `/status`: Returns the current state (active or idle).
+  - `/exit`: Stops all operations and exits the program.
+
 - **Console Logs**:
   ```
-  System is now in Idle Mode.
-  System is now Active.
+  System is now active.
+  System is now idle.
+  Exiting the system...
   ```
-- **Telegram Bot Messages**:
-  ```
-  User: /stop
-  Bot: System is now in Idle Mode.
-  User: /start
-  Bot: System is now Active.
-  ```
-
-## Integration Example
-In the main script, integrate idle mode with motion detection:
-```python
-from idle_mode import is_idle
-
-while True:
-    if not is_idle:
-        # Perform motion detection and other tasks
-        print("System is Active: Processing...")
-    else:
-        print("System is Idle: No operations performed.")
-    time.sleep(1)
-```
-This ensures that motion detection only runs when the system is active.
 
 ## Dependencies
 - Python 3.6 or higher
+- `telegram` library for bot communication
 
 ## License
 This module is part of the AI-Powered Surveillance System. See the main project `LICENSE` file for details.
