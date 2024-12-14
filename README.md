@@ -1,157 +1,127 @@
-# AI-Powered Smart Surveillance System with Jetson Nano
+# AI-Powered Surveillance System with Jetson Nano
 
-This project involves building a smart surveillance system using Jetson Nano, a Logitech Camera, and a Pan-Tilt mechanism driven by servo motors controlled via a PCA9685 PWM driver. The system captures images when someone enters the room and sends those images to a mobile phone through Telegram or WhatsApp.
-
-## Table of Contents
-- [Project Overview](#project-overview)
-- [Features](#features)
-- [Hardware Requirements](#hardware-requirements)
-- [Software Requirements](#software-requirements)
-- [Setup Instructions](#setup-instructions)
-- [System Workflow](#system-workflow)
-- [Code Structure](#code-structure)
-- [Future Enhancements](#future-enhancements)
-
-## Project Overview
-
-This AI-powered surveillance system is built on the NVIDIA Jetson Nano platform. The system uses a Logitech camera for image capturing and a person detection model. The camera is mounted on a Pan-Tilt mechanism controlled by servo motors, which can adjust the camera's position based on movement in the room.
-
-When motion is detected, the camera captures an image and sends it to the user's mobile device through Telegram or WhatsApp, providing real-time updates on the room's status.
+## Overview
+This project is an AI-powered surveillance system built on the NVIDIA Jetson Nano platform. It integrates motion detection, object recognition, and real-time notification capabilities, designed to detect and alert users when someone enters a monitored space. Captured images are sent to a Telegram bot for easy access.
 
 ## Features
+- **Motion Detection**: Detects changes in the environment using OpenCV.
+- **Object Detection**: Identifies if the detected motion corresponds to a person.
+- **Real-Time Notifications**: Sends captured images to a Telegram bot.
+- **Fan Control**: Manages the Jetson Nano’s fan based on temperature.
+- **System Monitoring**: Displays CPU, GPU usage, and temperature stats.
+- **Idle Mode**: Allows the system to pause and resume operations via Telegram commands.
 
-- Real-time person detection: Detects movement when someone enters the room.
-- Pan-Tilt Camera Control: Uses servo motors to adjust the camera's position for a better view.
-- Image capture and mobile notification: Captures images and sends them to mobile via Telegram or WhatsApp.
-- Integration with mobile devices: Supports sending images through both Telegram and WhatsApp using APIs.
-- Customizable alerts: Easily switch between Telegram and WhatsApp notifications.
+## Project Structure
+```
+Pro/
+├── bot_config.py                  # Configuration for the Telegram bot
+├── capture_image.py               # Handles motion detection and image capture using OpenCV
+├── ChatID_BotToken.py             # Stores the Telegram Bot token and chat ID
+├── description.docx               # Contains the project description and requirements
+├── fan_control.py                 # Manages fan speed based on Jetson Nano's temperature
+├── idle_mode.py                   # Implements idle mode to pause/resume system functionality
+├── main.py                        # Main script integrating all system components
+├── message_ids.json               # JSON file to manage message IDs for Telegram bot cleanup
+├── send_telegram.py               # Sends images and commands to Telegram bot
+├── system_stats.py                # Retrieves system stats like CPU, GPU, and temperature
+├── images/                        # Folder to store project-related images
+│   ├── setup_diagram.png          # Diagram showing hardware setup
+│   ├── telegram_ui.png            # Screenshot of the Telegram bot UI
+│   ├── captured_sample.png        # Example of a captured image
+│   └── fan_control_working.png    # Screenshot of fan control in action
+├── requirements.txt               # Python dependencies
+└── README.md                      # Main project documentation
+```
 
 ## Hardware Requirements
-
-- Jetson Nano (Developer Kit)
+- NVIDIA Jetson Nano (4GB Developer Kit)
 - Logitech Camera
-- PCA9685 PWM Driver (for servo control)
-- Two Servo Motors (for Pan-Tilt functionality)
-- USB to Micro-USB cable
+- PCA9685 PWM Driver (for servo control, optional for pan-tilt functionality)
 - Power supply for Jetson Nano
-- Breadboard, jumper wires, etc.
+- USB to Micro-USB cable
+- Breadboard, jumper wires, and other electronic components
 
 ## Software Requirements
+- **Operating System**: Ubuntu 18.04
+- **Python Version**: 3.6.9
+- **Installed Libraries**:
+  - OpenCV: `4.5.5`
+  - PyTorch: `1.10.0`
+  - TorchVision: `0.11.0`
+  - python-telegram-bot: `13.12`
+  - Twilio: `7.17.0`
+  - Adafruit Blinka: `5.13.0`
+  - Adafruit CircuitPython PCA9685: `3.4.15`
+  - Adafruit CircuitPython ServoKit: `1.3.0`
+  - Jetson.GPIO: `2.0.17`
 
-- OS: Ubuntu 18.04
-- Python version: 3.6.9
-- Installed libraries:
-  - OpenCV (4.5.5) for image capture and processing
-  - PyTorch (1.10.0) and TorchVision (0.11.0) for person detection
-  - Adafruit Blinka (5.13.0) for CircuitPython compatibility
-  - Adafruit CircuitPython PCA9685 (3.4.15) for controlling servos
-  - Adafruit CircuitPython ServoKit (1.3.0)
-  - python-telegram-bot (13.12) for sending images via Telegram
-  - Twilio (7.17.0) for sending messages via WhatsApp
-  - Jetson.GPIO (2.0.17) for GPIO control
+## Installation
 
-## Setup Instructions
-
-### Step 1: Jetson Nano Setup
-1. Install Jetson Nano and connect the power supply.
-2. Set up a USB Camera (Logitech) and connect it to the Jetson Nano.
-3. Configure Ubuntu 18.04 on Jetson Nano and ensure it runs with Python 3.6.9.
-
-### Step 2: Install Dependencies
+### 1. Update the System
 ```bash
-sudo apt-get update
-sudo apt-get install python3-pip
+sudo apt-get update && sudo apt-get upgrade -y
+```
+
+### 2. Install Python and Pip
+Ensure Python 3.6.9 is installed:
+```bash
+sudo apt-get install python3.6 python3-pip -y
+```
+
+### 3. Install Required Libraries
+Install the libraries listed in `requirements.txt`:
+```bash
+pip3 install -r requirements.txt
+```
+Or install them individually:
+```bash
 pip3 install opencv-python==4.5.5
 pip3 install torch==1.10.0 torchvision==0.11.0a0+fa347eb
 pip3 install python-telegram-bot==13.12
 pip3 install twilio==7.17.0
+pip3 install adafruit-blinka
 pip3 install adafruit-circuitpython-pca9685
 pip3 install adafruit-circuitpython-servokit
+pip3 install jetson-gpio
 ```
 
-### Step 3: Servo and PCA9685 Setup
-1. Connect the PCA9685 PWM Driver to the Jetson Nano via the I2C bus.
-2. Attach two servo motors to the PCA9685 and install the Pan-Tilt mechanism.
+## Setting Up the Telegram Bot
+1. Create a bot on Telegram via [BotFather](https://core.telegram.org/bots#botfather).
+2. Save the bot token and chat ID in `ChatID_BotToken.py`.
+3. Ensure the bot is set up to send and receive commands as outlined in `bot_config.py`.
 
-### Step 4: Configure Telegram and WhatsApp API
-#### Telegram Bot Setup
-1. Create a bot on Telegram via BotFather and get the API Token.
-2. Install and configure the python-telegram-bot library.
+## Running the Project
+1. **Start the system**:
+   Run the main script:
+   ```bash
+   python3 main.py
+   ```
+2. **Use Telegram commands**:
+   - `Start`: Begin receiving motion-detected images.
+   - `Stop`: Pause image detection and notifications.
+   - `Status`: Check the system status.
+   - `Clean`: Delete all Telegram bot images from the last 48 hours.
+   - `System`: Retrieve current CPU, GPU, and temperature stats.
+   - `Exit`: Stop the program entirely.
 
-#### WhatsApp Integration
-1. Create a Twilio account and configure WhatsApp messaging.
-2. Obtain your Twilio Account SID, Auth Token, and WhatsApp number.
+## Example Outputs
+- **Telegram Bot UI**:
+  ![Telegram Bot UI](images/telegram_ui.png)
 
-## System Workflow
+- **Setup Diagram**:
+  ![Setup Diagram](images/setup_diagram.png)
 
-1. Person Detection: The system uses a PyTorch-based model to detect people entering the room.
-2. Pan-Tilt Control: The camera moves to capture a wider range using the servo motors.
-3. Image Capture: Once a person is detected, the Logitech camera captures an image.
-4. Notification: The captured image is sent to the user's mobile phone via Telegram or WhatsApp.
+- **Captured Sample**:
+  ![Captured Image](images/captured_sample.png)
 
-## Code Structure
-
-```
-├── capture_image                          # Handles image capturing from the Logitech
-│   ├── capture_image.py           
-│   └── README.md
-├── detect_person                          # Detects people using a pre-trained PyTorch model
-│   ├── detect_person.py                   
-│   └── README.md
-├── pan_tilt_control                       # Controls the servo motors for the camera's pan-tilt movement
-│   ├── pan_tilt_control.py                # Adjusts the camera’s position using servos (PCA9685)
-│   └── README.md
-├── face_detection                         # Detects any face using OpenCV (for tracking)
-│   ├── detect_face.py                     # Detects faces in the frame
-│   └── README.md
-├── face_tracking                          # Tracks the detected face using pan-tilt movement
-│   ├── track_face.py                      # Tracks the face and adjusts the camera
-│   └── README.md
-├── face_recognition                       # Recognize authorized and unauthorized faces
-│   ├── recognize_face.py                  # Verifies faces using a pre-trained model
-│   └── README.md
-├── video_streaming                        # Real-time video streaming functionality
-│   ├── stream_video.py                    # Stream live video to mobile or web
-│   └── README.md
-├── cloud_upload                           # Upload images and videos to cloud storage
-│   ├── upload_to_cloud.py                 # Uploads media to Google Drive or AWS S3
-│   └── README.md
-├── idle_mode                              # Handles idle states based on conditions
-│   ├── sensor_based_idle.py               # Idle mode when no motion is detected
-│   ├── manual_idle.py                     # Manually control idle mode via Telegram/WhatsApp
-│   └── README.md
-├── send_telegram                          # Sends images via Telegram bot and receives commands for control
-│   ├── send_telegram.py                   # Now includes turning pan-tilt on/off via Telegram
-│   └── README.md
-├── send_whatsapp                          # Sends images via WhatsApp using Twilio and receives commands for control                        
-│   ├── send_whatsapp.py                   # Now includes turning pan-tilt on/off via WhatsApp
-│   └── README.md
-├── main                                   # Main script to integrate person detection, image capture, and notification                               
-│   ├── main.py
-│   └── README.md
-├── models                                 # Stores any machine learning models used for detection and recognition                                
-├── requirements.txt                       # List of required Python libraries
-├── LICENSE                                # License file for the project
-└── README.md                              # Main README explaining the entire project
-
-
-
-```
-
-### Important Files:
-- `capture_image.py`: Starts the camera and captures an image when motion is detected.
-- `detect_person.py`: Runs a lightweight PyTorch model to detect people in the frame.
-- `pan_tilt_control.py`: Adjusts the camera's position using the servo motors controlled by the PCA9685.
-- `send_telegram.py`: Sends the captured image via a Telegram bot.
-- `send_whatsapp.py`: Sends the captured image via WhatsApp using the Twilio API.
-- `main.py`: Integrates all components and runs the full surveillance system.
+- **Fan Control Working**:
+  ![Fan Control](images/fan_control_working.png)
 
 ## Future Enhancements
-
-- Video streaming: Implement a feature for real-time video streaming to the user's mobile.
-- Facial recognition: Add face detection to recognize known individuals.
-- Multiple camera support: Integrate multiple cameras for wider surveillance coverage.
+- Add real-time video streaming capabilities.
+- Integrate facial recognition to identify known individuals.
+- Support multiple cameras for wider surveillance.
 
 ## License
+This project is licensed under the MIT License. See the `LICENSE` file for details.
 
-This project is licensed under the MIT License.
