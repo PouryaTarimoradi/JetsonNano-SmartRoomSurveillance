@@ -10,6 +10,7 @@ This module is responsible for detecting motion in the environment using OpenCV 
 - **Logging**: Tracks motion events and saves logs for analysis.
 - **Configurable Sensitivity**: Allows adjustment of motion detection sensitivity thresholds.
 - **Supports Multiple Cameras**: Can handle multiple camera inputs with slight modifications.
+- **Threaded Operations**: Ensures smooth operation by separating image-saving tasks from motion detection using multithreading.
 
 ## How It Works
 The `capture_image.py` script uses OpenCV to analyze live camera feed in real-time. Here's a detailed explanation of its functionality:
@@ -30,17 +31,28 @@ The `capture_image.py` script uses OpenCV to analyze live camera feed in real-ti
    - If motion is detected, saves the current frame as an image file.
    - Stores the image in a predefined directory for further processing.
    - Logs the event details, such as timestamp and location.
-   - Checks for file management, ensuring the directory does not exceed a predefined limit of images.
+   - Ensures file management by checking if the directory exceeds a predefined limit of images.
 
 5. **Display Feed**:
    - Displays the live feed for real-time monitoring with bounding boxes around motion regions.
 
-6. **Configuration Options**:
+6. **Threaded Operations**:
+   - **Purpose**: The threading implementation in this script ensures that saving images does not block or delay motion detection.
+   - **Implementation**: A dedicated thread handles the image-saving process while the main thread continues detecting motion.
+   - **Example Code**:
+     ```python
+     from threading import Thread
+
+     def save_image_threaded(image, path):
+         Thread(target=cv2.imwrite, args=(path, image)).start()
+
+     save_image_threaded(frame, f"{save_directory}/captured_image_{timestamp}.jpg")
+     ```
+   - **Explanation**: The `save_image_threaded` function uses Python’s `Thread` class to offload the task of saving images to disk. This prevents potential frame drops during motion detection, especially when working with high-resolution images.
+
+7. **Configuration Options**:
    - Includes adjustable settings for motion sensitivity, capture intervals, and frame resizing.
    - Allows enabling/disabling logging and debug display via configuration file.
-
-7. **Threaded Operations**:
-   - Implements threading to manage image saving and motion detection separately, ensuring smooth operation without frame drops.
 
 8. **Exit Safely**:
    - Releases the camera and closes all OpenCV windows when the script is stopped.
@@ -102,12 +114,14 @@ Uses frame subtraction to detect changes and saves an image if motion is detecte
 ```python
 from threading import Thread
 
+# Threaded function for saving images
 def save_image_threaded(image, path):
     Thread(target=cv2.imwrite, args=(path, image)).start()
 
+# Example usage
 save_image_threaded(frame, f"{save_directory}/captured_image_{timestamp}.jpg")
 ```
-Ensures image saving does not block motion detection by using a separate thread.
+The threading implementation improves performance by ensuring that the time-consuming disk write operation does not interrupt the motion detection loop.
 
 ### Cleanup
 ```python
