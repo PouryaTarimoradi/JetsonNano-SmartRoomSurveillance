@@ -73,11 +73,7 @@ Or install them individually:
 pip3 install opencv-python==4.5.5
 pip3 install torch==1.10.0 torchvision==0.11.0a0+fa347eb
 pip3 install python-telegram-bot==13.12
-pip3 install twilio==7.17.0
-pip3 install adafruit-blinka
-pip3 install adafruit-circuitpython-pca9685
-pip3 install adafruit-circuitpython-servokit
-pip3 install jetson-gpio
+
 ```
 
 ## Setting Up the Telegram Bot
