@@ -36,10 +36,9 @@ Pro/
 ## Hardware Requirements
 - NVIDIA Jetson Nano (4GB Developer Kit)
 - Logitech Camera
-- PCA9685 PWM Driver (for servo control, optional for pan-tilt functionality)
 - Power supply for Jetson Nano
 - USB to Micro-USB cable
-- Breadboard, jumper wires, and other electronic components
+
 
 ## Software Requirements
 - **Operating System**: Ubuntu 18.04
@@ -49,11 +48,7 @@ Pro/
   - PyTorch: `1.10.0`
   - TorchVision: `0.11.0`
   - python-telegram-bot: `13.12`
-  - Twilio: `7.17.0`
-  - Adafruit Blinka: `5.13.0`
-  - Adafruit CircuitPython PCA9685: `3.4.15`
-  - Adafruit CircuitPython ServoKit: `1.3.0`
-  - Jetson.GPIO: `2.0.17`
+  
 
 ## Installation
 
