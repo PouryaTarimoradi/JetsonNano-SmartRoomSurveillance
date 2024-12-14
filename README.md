@@ -1,4 +1,5 @@
 # Camera Security System with Jetson Nano
+![photo_2024-12-14_20-53-26](https://github.com/user-attachments/assets/821170ea-0271-490b-8996-3f2e99ac1788)
 
 <img src="photo_2024-12-14_20-53-26.jpg" alt="Camera Security System" width="800">
 
