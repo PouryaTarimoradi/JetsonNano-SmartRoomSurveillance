@@ -24,9 +24,6 @@ CameraSecuritySystem/
 ├── capture_image/
 │   ├── capture_image.py               # Handles motion detection and image capture
 │   ├── README.md                      # Documentation for capture_image
-├── fan_control/
-│   ├── fan_control.py                 # Manages fan speed based on Jetson Nano temperature
-│   ├── README.md                      # Documentation for fan_control
 ├── send_telegram/
 │   ├── send_telegram.py               # Sends images and commands to Telegram bot
 │   ├── README.md                      # Documentation for send_telegram
