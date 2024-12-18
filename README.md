@@ -95,7 +95,7 @@ pip3 install python-telegram-bot==13.12
 1. **Clone the Repository**:
    ```bash
    git clone https://github.com/your-repo/CameraSecuritySystem.git
-   cd CameraSecuritySystem
+  
    ```
 
 2. **Run the Main Script**:
