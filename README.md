@@ -32,9 +32,11 @@ CameraSecuritySystem/
 │   ├── README.md                      # Documentation for system_stats
 ├── idle_mode/
 │   ├── idle_mode.py                   # Implements idle mode for pausing/resuming operations
+│   ├── README.md
+├── main/
+│   ├── main.py                        # Main script to integrate all modules
 │   ├── README.md                      # Documentation for idle_mode
-├── processed_images/                  # Folder for storing captured images
-├── main.py                            # Main script to integrate all modules
+├── processed_images/                  # Folder for storing captured images                        
 ├── requirements.txt                   # Python dependencies
 ├── LICENSE                            # Project license
 └── README.md                          # Main project documentation
