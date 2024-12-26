@@ -35,8 +35,7 @@ CameraSecuritySystem/
 │   ├── README.md
 ├── main/
 │   ├── main.py                        # Main script to integrate all modules
-│   ├── README.md                      # Documentation for idle_mode
-├── processed_images/                  # Folder for storing captured images                        
+│   ├── README.md                      # Documentation for idle_mode                       
 ├── requirements.txt                   # Python dependencies
 ├── LICENSE                            # Project license
 └── README.md                          # Main project documentation
