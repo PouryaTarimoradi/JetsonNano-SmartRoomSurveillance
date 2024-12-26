@@ -39,7 +39,7 @@ def get_bot_and_chat_ids(token):
 
 
 # Replace 'YOUR_BOT_TOKEN' with your actual bot token
-bot_token = "8171206267:AAFUb_Jqeq06hufalIz5mDGDUhecg3hr0ss"
+bot_token = "       "
 
 try:
     get_bot_and_chat_ids(bot_token)
