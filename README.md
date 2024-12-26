@@ -11,6 +11,15 @@ This project is an AI-powered surveillance system built on the NVIDIA Jetson Nan
 - **Fan Control**: Manages the Jetson Nano’s fan based on temperature.
 - **System Monitoring**: Displays CPU, GPU usage, and temperature stats.
 - **Idle Mode**: Allows the system to pause and resume operations via Telegram commands.
+![Screenshot 2024-12-26 155432](https://github.com/user-attachments/assets/4dd81337-e184-426e-8087-aa7324674fe8)
+
+
+![Screenshot 2024-12-26 155306](https://github.com/user-attachments/assets/f3054a11-d94a-412a-9d45-2c0fe93a85ee)
+
+![Screenshot 2024-12-26 155532](https://github.com/user-attachments/assets/e231042c-9b33-4afd-8e8b-2dd36940b398)
+
+
+  
 
 ## Project Structure
 ```
